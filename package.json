@@ -3,11 +3,23 @@
   "version": "0.1.0",
   "description": "SDK for linkto-so",
   "type": "module",
-<<<<<<< HEAD
   "license": "MIT",
-=======
   "packageManager": "pnpm@11.21.0",
->>>>>>> d73aa08 (chore: add packageManager to package.json)
+  "homepage": "https://linkto.so",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/linkto-so/linkto-ts.git"
+  },
+  "bugs": {
+    "url": "https://github.com/linkto-so/linkto-ts/issues"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "files": [
+    "dist"
+  ],
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
