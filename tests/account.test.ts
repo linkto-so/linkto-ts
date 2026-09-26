@@ -244,7 +244,7 @@ describe("Account, Analytics, Domains, Tags, and Tokens Resources", () => {
       expect(result).toEqual(tokenList);
     });
 
-    it("create calls /api/v1/tokens with POST body and returns ApiTokenCreated", async () => {
+    it("create calls /api/v1/tokens with POST body containing expiresIn", async () => {
       const createdToken: ApiTokenCreated = {
         id: "tok_new",
         name: "Deploy Script",
@@ -265,7 +265,7 @@ describe("Account, Analytics, Domains, Tags, and Tokens Resources", () => {
 
       const result = await tokens.create({
         name: "Deploy Script",
-        expiresAt: "2026-12-31T23:59:59Z",
+        expiresIn: 3600,
       });
 
       expect(mockFetch).toHaveBeenCalledTimes(1);
@@ -274,9 +274,42 @@ describe("Account, Analytics, Domains, Tags, and Tokens Resources", () => {
       expect(reqInit.method).toBe("POST");
       expect(JSON.parse(reqInit.body as string)).toEqual({
         name: "Deploy Script",
-        expiresAt: "2026-12-31T23:59:59Z",
+        expiresIn: 3600,
       });
       expect(result.token).toBe("lnk_abc123secret");
+    });
+
+    it("create converts expiresAt date into relative expiresIn seconds", async () => {
+      const createdToken: ApiTokenCreated = {
+        id: "tok_new2",
+        name: "Auto Expire",
+        token: "lnk_secret2",
+        expiresAt: "2026-12-31T23:59:59Z",
+        createdAt: "2026-09-26T00:00:00Z",
+      };
+
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(JSON.stringify({ data: createdToken }), {
+          status: 201,
+          headers: { "Content-Type": "application/json" },
+        }),
+      );
+
+      const client = new HttpClient({ fetch: mockFetch });
+      const tokens = new TokensResource(client);
+
+      const futureDate = new Date(Date.now() + 60000); // 60s from now
+      await tokens.create({
+        name: "Auto Expire",
+        expiresAt: futureDate,
+      });
+
+      expect(mockFetch).toHaveBeenCalledTimes(1);
+      const [, reqInit] = mockFetch.mock.calls[0];
+      const parsedBody = JSON.parse(reqInit.body as string);
+      expect(parsedBody.name).toBe("Auto Expire");
+      expect(parsedBody.expiresIn).toBeGreaterThanOrEqual(58);
+      expect(parsedBody.expiresIn).toBeLessThanOrEqual(61);
     });
 
     it("delete calls DELETE /api/v1/tokens/:id", async () => {

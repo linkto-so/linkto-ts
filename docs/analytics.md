@@ -19,11 +19,10 @@ const linkto = new Linkto({
 Query aggregated click metrics across all links in your active workspace using `linkto.analytics.get(options)`.
 
 ```typescript
-// Fetch workspace stats for the past 30 days (default is usually 7 or 30 days)
+// Fetch workspace stats for the past 30 days (default is 7 or 30 days)
 const workspaceStats = await linkto.analytics.get({ days: 30 });
 
 console.log("Total Workspace Clicks:", workspaceStats.clicks);
-console.log("Reporting Timezone:", workspaceStats.timeZone);
 
 if (workspaceStats.byDay) {
   console.log("\nDaily Click Trends:");
@@ -38,8 +37,15 @@ if (workspaceStats.byDay) {
 ```typescript
 interface WorkspaceStats {
   clicks: number;
-  timeZone: string;
+  timeZone?: string;
+  grain?: "hour" | "day";
+  timeseries?: Array<{ date: string; clicks: number }>;
   byDay?: Array<{ day: string; clicks: number }>;
+  devices?: Array<{ name: string; clicks: number; sharePct: number }>;
+  browsers?: Array<{ name: string; clicks: number; sharePct: number }>;
+  hardware?: Array<{ name: string; clicks: number; sharePct: number }>;
+  countries?: Array<{ name: string; clicks: number; sharePct: number }>;
+  channels?: Array<{ name: string; clicks: number; sharePct: number }>;
 }
 ```
 
@@ -49,14 +55,18 @@ interface WorkspaceStats {
 
 Retrieve detailed analytics for a single short link using either `linkto.links.stats()`, its alias `linkto.links.visitStats()`, or `linkto.analytics.forLink()`.
 
+The `breakdown` query parameter accepts a single dimension per request: `"device"`, `"browser"`, `"os"`, or `"country"`.
+
 ```typescript
 const stats = await linkto.links.stats("lnk_abc123", {
   days: 14,
-  breakdown: "device,browser,os,country",
+  breakdown: "device",
 });
 
 console.log("Link Clicks:", stats.clicks);
-console.log("Timezone:", stats.timeZone);
+if (stats.breakdowns?.device) {
+  console.log("Device Breakdown:", stats.breakdowns.device);
+}
 ```
 
 ### Method Aliases
@@ -78,17 +88,22 @@ await linkto.analytics.forLink("lnk_abc123", { days: 30 });
 
 ## Breakdowns & Dimension Metrics
 
-The `LinkStats` response contains optional breakdown dictionaries when queried:
+The `LinkStats` response contains timeseries metrics and breakdown data:
 
 ```typescript
 interface LinkStats {
   clicks: number;
-  timeZone: string;
+  timeZone?: string;
+  grain?: "hour" | "day";
+  timeseries?: Array<{ date: string; clicks: number }>;
   byDay?: Array<{ day: string; clicks: number }>;
+  breakdowns?: Partial<Record<string, Array<{ name: string; clicks: number; sharePct: number }>>>;
   byDevice?: Record<string, number>;
   byBrowser?: Record<string, number>;
   byOs?: Record<string, number>;
   byCountry?: Record<string, number>;
+  scanned?: { clicks: number };
+  configured?: boolean;
 }
 ```
 

@@ -119,6 +119,9 @@ console.log("Active workspace tags:", tags.join(", "));
 
 Programmatically list, create, and revoke workspace API tokens.
 
+> [!NOTE]
+> **Authentication Requirement**: Token management endpoints (`linkto.tokens.*`) require an authenticated browser dashboard session cookie (`sessionOnly`). They cannot be invoked using a Bearer API token (`lnk_...`). This ensures compromised API tokens cannot mint or enumerate credentials.
+
 ### 1. Listing Tokens
 
 ```typescript
@@ -134,12 +137,19 @@ for (const token of tokens) {
 
 ### 2. Creating a Token
 
-Create a new token with an optional expiration date. Note that the full `token` string is only returned once upon creation:
+Create a new token with an optional relative lifetime (`expiresIn` in seconds) or absolute date (`expiresAt`). Note that the full `token` secret string is only returned once upon creation:
 
 ```typescript
+// Option A: Specify duration in relative seconds (e.g. 90 days)
 const created = await linkto.tokens.create({
   name: "CI/CD Deployment Token",
-  expiresAt: new Date(Date.now() + 86400 * 1000 * 90).toISOString(), // 90 days
+  expiresIn: 90 * 86400,
+});
+
+// Option B: Specify an absolute Date or ISO string
+const createdWithDate = await linkto.tokens.create({
+  name: "Temporary Staging Token",
+  expiresAt: new Date(Date.now() + 86400 * 1000 * 30),
 });
 
 console.log("Token ID:", created.id);

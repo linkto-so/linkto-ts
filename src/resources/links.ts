@@ -97,9 +97,19 @@ export class LinksResource {
     options?: { days?: number; breakdown?: string },
   ): Promise<LinkStats> {
     const qs = toQueryString(options);
-    return await this.http.request<LinkStats>(
+    const raw = await this.http.request<LinkStats>(
       `/api/v1/links/${encodeURIComponent(id)}/stats${qs}`,
     );
+    if (!raw.byDay && raw.timeseries) {
+      return {
+        ...raw,
+        byDay: raw.timeseries.map((pt) => ({
+          day: pt.date,
+          clicks: pt.clicks,
+        })),
+      };
+    }
+    return raw;
   }
 
   async visitStats(

@@ -145,14 +145,30 @@ export interface BulkCreateResponse {
   hasFailures: boolean;
 }
 
+export interface TimeSeriesPoint {
+  date: string;
+  clicks: number;
+}
+
+export interface BreakdownRow {
+  name: string;
+  clicks: number;
+  sharePct: number;
+}
+
 export interface LinkStats {
   clicks: number;
-  timeZone: string;
+  timeZone?: string;
+  grain?: "hour" | "day";
+  timeseries?: TimeSeriesPoint[];
   byDay?: Array<{ day: string; clicks: number }>;
+  breakdowns?: Partial<Record<string, BreakdownRow[]>>;
   byDevice?: Record<string, number>;
   byBrowser?: Record<string, number>;
   byOs?: Record<string, number>;
   byCountry?: Record<string, number>;
+  scanned?: { clicks: number };
+  configured?: boolean;
 }
 
 export interface QrRenderOptions {
@@ -190,8 +206,15 @@ export interface AccountUsage {
 
 export interface WorkspaceStats {
   clicks: number;
-  timeZone: string;
+  timeZone?: string;
+  grain?: "hour" | "day";
+  timeseries?: TimeSeriesPoint[];
   byDay?: Array<{ day: string; clicks: number }>;
+  devices?: BreakdownRow[];
+  browsers?: BreakdownRow[];
+  hardware?: BreakdownRow[];
+  countries?: BreakdownRow[];
+  channels?: BreakdownRow[];
 }
 
 export interface ApiTokenSummary {
@@ -200,6 +223,14 @@ export interface ApiTokenSummary {
   createdAt: string;
   expiresAt: string | null;
   lastUsedAt: string | null;
+}
+
+export interface CreateApiTokenOptions {
+  name: string;
+  /** Relative lifetime in seconds from now. */
+  expiresIn?: number | null;
+  /** Absolute expiry time as an ISO string or Date instance. Automatically converted to expiresIn seconds. */
+  expiresAt?: string | Date | null;
 }
 
 export interface ApiTokenCreated {
