@@ -173,6 +173,14 @@ try {
 }
 ```
 
+## Architecture
+
+- **Zero Runtime Dependencies**: Declares empty runtime dependencies (`dependencies: {}`) and uses native `globalThis.fetch` along with standard Web APIs (Request, Response, URL, Headers).
+- **Dual ESM and CommonJS**: Compiled with `tsup` to output both modern ECMAScript modules (`.js`, `.d.ts`) and legacy CommonJS modules (`.cjs`, `.d.cts`) for seamless compatibility across runtimes and bundlers.
+- **Resource Modularity**: Features dedicated, modular resource clients (`links`, `analytics`, `domains`, `qr`, `tags`, `account`, `tokens`) that share a single underlying typed `HttpClient` transport.
+- **Strict Typing with `as const`**: Employs TypeScript `as const` object constants for enum-like values to ensure compile-time type safety and rich IDE autocomplete without any runtime overhead.
+- **Cloudflare-Native Alignment**: Designed from the ground up to integrate cleanly with Link-to's high-performance edge infrastructure and serverless execution environments.
+
 ## Documentation
 
 Explore topic guides for detailed usage, full parameters, and practical examples:
