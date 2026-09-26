@@ -7,14 +7,14 @@ import {
 import DefaultClient, {
   AccountResource,
   AnalyticsResource,
-  type ClientOptions as RootClientOptions,
   DomainsResource,
   LinksResource,
   Linkto,
+  name,
   QrResource,
+  type ClientOptions as RootClientOptions,
   TagsResource,
   TokensResource,
-  name,
   version,
 } from "../src/index.js";
 
@@ -22,7 +22,6 @@ describe("Linkto Client & Package Exports", () => {
   const originalEnv = process.env.LINKTO_API_KEY;
 
   beforeEach(() => {
-    // biome-ignore lint/performance/noDelete: deleting env var is required in Node.js to avoid "undefined" string coercion
     delete process.env.LINKTO_API_KEY;
   });
 
@@ -30,7 +29,6 @@ describe("Linkto Client & Package Exports", () => {
     if (originalEnv !== undefined) {
       process.env.LINKTO_API_KEY = originalEnv;
     } else {
-      // biome-ignore lint/performance/noDelete: deleting env var is required in Node.js
       delete process.env.LINKTO_API_KEY;
     }
     vi.restoreAllMocks();

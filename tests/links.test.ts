@@ -8,7 +8,7 @@ import type {
   LinkSummaryPage,
   UpdateLinkOptions,
 } from "../src/models.js";
-import { LinksResource, enrichLink } from "../src/resources/links.js";
+import { enrichLink, LinksResource } from "../src/resources/links.js";
 
 function createMockLink(overrides: Partial<Link> = {}): Link {
   return {

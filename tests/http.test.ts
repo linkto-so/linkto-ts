@@ -11,7 +11,6 @@ describe("HttpClient", () => {
   const originalEnv = process.env.LINKTO_API_KEY;
 
   beforeEach(() => {
-    // biome-ignore lint/performance/noDelete: deleting env var is required in Node.js to avoid "undefined" string coercion
     delete process.env.LINKTO_API_KEY;
   });
 
@@ -19,7 +18,6 @@ describe("HttpClient", () => {
     if (originalEnv !== undefined) {
       process.env.LINKTO_API_KEY = originalEnv;
     } else {
-      // biome-ignore lint/performance/noDelete: deleting env var is required in Node.js
       delete process.env.LINKTO_API_KEY;
     }
     vi.restoreAllMocks();

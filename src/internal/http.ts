@@ -24,10 +24,9 @@ export interface ClientOptions {
 
 function getEnvApiKey(): string | undefined {
   try {
-    if (typeof process !== "undefined" && process?.env) {
-      const key = process.env.LINKTO_API_KEY;
-      return key && key !== "undefined" ? key : undefined;
-    }
+    const env = typeof process !== "undefined" ? process.env : undefined;
+    const key = env?.LINKTO_API_KEY;
+    return key && key !== "undefined" ? key : undefined;
   } catch {
     // Ignore runtime environment lookup errors
   }

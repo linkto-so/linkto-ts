@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
-  API_ERROR_CODE,
   type AccountProfile,
   type AccountUsage,
+  API_ERROR_CODE,
   type BulkCreateResponse,
   type CreateLinkOptions,
   type DomainSummary,
