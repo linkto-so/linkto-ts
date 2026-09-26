@@ -17,26 +17,16 @@ export function enrichLink<T extends LinkSummary>(item: T): T {
     !item.aliasUrl &&
     (item.domain === "linkto.so" || item.domain === "localhost")
   ) {
-    item.aliasUrl = `https://shor.ink/${item.slug}`;
+    return {
+      ...item,
+      aliasUrl: `https://shor.ink/${item.slug}`,
+    };
   }
   return item;
 }
 
-function normalizeCreateLinkOptions(
-  options: CreateLinkOptions,
-): Record<string, unknown> {
-  const { url, destination, ...rest } = options;
-  const finalDestination = destination ?? url;
-  return {
-    ...rest,
-    ...(finalDestination !== undefined
-      ? { destination: finalDestination }
-      : {}),
-  };
-}
-
-function normalizeUpdateLinkOptions(
-  options: UpdateLinkOptions,
+function normalizeLinkOptions(
+  options: CreateLinkOptions | UpdateLinkOptions,
 ): Record<string, unknown> {
   const { url, destination, ...rest } = options;
   const finalDestination = destination ?? url;
@@ -52,7 +42,7 @@ export class LinksResource {
   constructor(private readonly http: HttpClient) {}
 
   async create(options: CreateLinkOptions): Promise<Link> {
-    const payload = normalizeCreateLinkOptions(options);
+    const payload = normalizeLinkOptions(options);
     const link = await this.http.request<Link>("/api/v1/links", {
       method: "POST",
       body: JSON.stringify(payload),
@@ -85,7 +75,7 @@ export class LinksResource {
   }
 
   async update(id: string, options: UpdateLinkOptions): Promise<Link> {
-    const payload = normalizeUpdateLinkOptions(options);
+    const payload = normalizeLinkOptions(options);
     const link = await this.http.request<Link>(
       `/api/v1/links/${encodeURIComponent(id)}`,
       {
@@ -149,7 +139,7 @@ export class LinksResource {
   }
 
   async bulkCreate(links: CreateLinkOptions[]): Promise<BulkCreateResponse> {
-    const normalizedLinks = links.map(normalizeCreateLinkOptions);
+    const normalizedLinks = links.map(normalizeLinkOptions);
     const raw = await this.http.request<{
       created: LinkSummary[];
       rejected: BulkRejectedItem[];
