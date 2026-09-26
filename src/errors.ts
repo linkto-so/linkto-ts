@@ -42,26 +42,29 @@ export class LinktoApiError extends LinktoError {
 }
 
 export class LinktoRateLimitError extends LinktoApiError {
+  override readonly status: 429;
   readonly retryAfter: number;
 
   constructor(params: {
-    status: number;
+    status?: 429;
     code: string;
     message: string;
     retryAfter: number;
     docUrl?: string;
   }) {
-    super(params);
+    super({ ...params, status: 429 });
     this.name = "LinktoRateLimitError";
+    this.status = 429;
     this.retryAfter = params.retryAfter;
   }
 }
 
 export class LinktoQuotaExceededError extends LinktoApiError {
+  override readonly status: 401 | 402 | 403;
   readonly resource: string;
 
   constructor(params: {
-    status: number;
+    status: 401 | 402 | 403;
     code: string;
     message: string;
     resource: string;
@@ -70,6 +73,7 @@ export class LinktoQuotaExceededError extends LinktoApiError {
   }) {
     super(params);
     this.name = "LinktoQuotaExceededError";
+    this.status = params.status;
     this.resource = params.resource;
   }
 }
